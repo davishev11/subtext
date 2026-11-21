@@ -1,0 +1,12 @@
+.DS_Store
+*.wav
+*.bin
+dist/
+extension/bin/whisper-cli
+extension/.debug
+# local-only: research material, design drafts, test output and reports (they hold local paths)
+research/*
+!research/ae_run.sh
+design/
+tests/out/
+tests/reports/

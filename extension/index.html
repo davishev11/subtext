@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Subtext</title>
+<link rel="stylesheet" href="css/panel.css">
+</head>
+<body>
+<div class="p" id="panel">
+  <div class="comp"><span class="dot"></span><span class="nm" id="compName">Open a composition</span><select id="verSel" title="Transcript versions"></select></div>
+  <div class="fmt"><span class="tag b" id="fmtTag">—</span><span id="fmtName"></span><span class="sp"></span><span id="fmtLim"></span></div>
+  <div class="tabs">
+    <button class="tab on" data-tab="voice">Voice</button>
+    <button class="tab" data-tab="lines">Lines</button>
+    <button class="tab" data-tab="style">Style</button>
+    <button class="tab" data-tab="set" title="Settings">⚙</button>
+  </div>
+
+  <!-- VOICE -->
+  <section class="view on" id="v-voice">
+    <div class="scroll">
+      <div class="sec">
+        <div class="lbl">Audio source</div>
+        <div class="field"><span>Comp work area</span><span class="sp"></span><span class="mono dim" id="waRange">—</span></div>
+        <p class="hint">Set the work area (B / N) over the voice-over. Its audio is rendered to a WAV automatically; your Render Queue stays untouched.</p>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">Engine</div>
+        <div class="seg"><button class="on" id="engLocal">● Local</button><button id="engEl" disabled>ElevenLabs 🔒</button></div>
+        <p class="hint" id="engHint"></p>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">Language</div>
+        <div class="field"><select id="langSel">
+          <option value="auto">Auto-detect</option><option value="en">English</option><option value="uk">Українська</option>
+          <option value="ru">Русский</option><option value="de">Deutsch</option><option value="es">Español</option>
+          <option value="fr">Français</option><option value="pl">Polski</option><option value="it">Italiano</option><option value="pt">Português</option>
+        </select></div>
+        <div style="margin-top:8px">
+          <div class="chk on" id="optExact"><i></i>Precise word timing (for karaoke)</div>
+          <div class="chk on" id="optSnap"><i></i>Snap words to pauses</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <div id="trProg" hidden>
+        <div class="prog"><i id="trBar"></i></div>
+        <div class="steps"><div id="st1">○ Render work-area audio</div><div id="st2">○ Recognition</div><div id="st3">○ Lines for the format</div></div>
+      </div>
+      <button class="btn y" id="trBtn">Transcribe</button>
+      <p class="hint" style="margin:0" id="trNote"></p>
+    </div>
+  </section>
+
+  <!-- LINES -->
+  <section class="view" id="v-lines">
+    <div class="tb">
+      <div class="grp mode" title="How words are grouped into captions">
+        <button class="ib" id="modeWords" data-mode="words" title="One word per caption — start over">Words</button>
+        <button class="ib" id="modeFit" data-mode="fit" title="Fill each caption up to Max rows (auto-merge)">✦ Auto</button>
+        <button class="ib" id="modeSent" data-mode="sent" title="One sentence per caption; long ones split at commas">Sentences</button>
+      </div>
+      <button class="ib" id="undoBtn" title="Undo (⌘Z)">↶</button>
+      <button class="ib" id="redoBtn" title="Redo (⌘⇧Z)">↷</button>
+      <button class="ib" id="splitBtn" title="Split the selected line (B)">B</button>
+      <span class="sp"></span>
+      <button class="ib" id="ioBtn">SRT / VTT ▾</button>
+    </div>
+    <div class="tb sub">
+      <label class="rows" title="Auto and Sentences make captions of at most this many rows. Any number works; 2 is the usual.">Max rows <input id="maxRows" inputmode="numeric" autocomplete="off" spellcheck="false"></label>
+      <span class="hint" id="rowsHint"></span>
+    </div>
+    <div class="list" id="list" tabindex="0"></div>
+    <div class="keys"><span><kbd>Click</kbd> select</span><span><kbd>⇧ Click</kbd> merge</span><span><kbd>B</kbd> split</span><span><kbd>⌫</kbd> delete</span><span><kbd>⌘Z</kbd> undo</span><span><kbd>Double-click</kbd> edit</span></div>
+    <div class="foot">
+      <div class="sync" id="syncInfo"><i></i></div>
+      <button class="btn y" id="applyBtn">Update in AE</button>
+    </div>
+  </section>
+
+  <!-- STYLE -->
+  <section class="view" id="v-style">
+    <div class="scroll">
+      <div class="sec">
+        <div class="lbl">1 · Text look</div>
+        <div class="ref">
+          <div class="row"><span class="src" id="refSrc">Default style</span></div>
+          <button class="ib wide" id="takeRef">⤓ Copy style from the selected layer</button>
+        </div>
+        <p class="hint">Select any text layer in the comp (a client's title, for example). Captions take its font, colour and stroke and keep their own size (Fit sets the size).</p>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">2 · Layer effects</div>
+        <div class="scope" id="scope"></div>
+        <div class="fxg" style="margin-top:6px">
+          <button class="fx" data-fx="karaoke"><span class="ic">♪</span><div>Karaoke<small></small></div></button>
+          <button class="fx" data-fx="accent"><span class="ic">▣</span><div>Accent box<small></small></div></button>
+          <button class="fx" data-fx="adaptive"><span class="ic">▤</span><div>Adaptive box<small></small></div></button>
+          <button class="fx" data-fx="textbox"><span class="ic">▭</span><div>Text box<small></small></div></button>
+        </div>
+        <p class="hint">Click to add an effect, click again to remove it. Works on the captions selected in the comp, or on all of them when none are selected.</p>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">3 · Comp controller <span class="tag b">1 layer per comp</span></div>
+        <div class="ctl">
+          <label><input type="color" id="cAccent" value="#ffd23f">Karaoke</label>
+          <label><input type="color" id="cAccBox" value="#4c8dff">Accent box</label>
+          <label><input type="color" id="cBox" value="#0a0a0d">Box</label>
+          <label>Opacity<input type="range" id="cOp" min="0" max="100" value="90"></label>
+        </div>
+        <p class="hint">Padding, karaoke scale and position live on the “Subtext Controller” layer in Effect Controls.</p>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">4 · Tools</div>
+        <div class="fxg">
+          <button class="fx" id="tSplit"><span class="ic">⇅</span><div>Split line<small>into 2 inside the layer</small></div></button>
+          <button class="fx" id="tAlign"><span class="ic">⇤</span><div>Align<small>no flicker between captions</small></div></button>
+          <button class="fx" id="tFit"><span class="ic">⤢</span><div>Fit to safe zone<small>biggest size that fits</small></div></button>
+        </div>
+        <div class="tool-row">
+          <input id="rmChars" spellcheck="false">
+          <button class="ib" id="tRm">⌫ Remove</button>
+        </div>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">Presets</div>
+        <div class="pg" id="pres"></div>
+        <p class="hint">A preset sets font, effects and colours in one click. Fine-tune afterwards.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="v-set">
+    <div class="scroll">
+      <div class="sec">
+        <div class="lbl">Speech model</div>
+        <div class="cards" id="models"></div>
+        <p class="hint">Models live in ~/Library/Application Support/Subtext/models and work offline.</p>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">Formats (by comp size)</div>
+        <table class="tbl" id="limTbl"></table>
+        <p class="hint">Characters per line · lines per caption. Need bigger text? Scale the precomp.</p>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">ElevenLabs (optional)</div>
+        <div class="field"><input id="keyIn" type="password" placeholder="paste your API key…" autocomplete="off" spellcheck="false"><span id="keyOk"></span></div>
+        <p class="hint">The key is stored only on this Mac. It unlocks Scribe as a second engine.</p>
+      </div>
+      <div class="sec tight">
+        <div class="lbl">Storage</div>
+        <p class="hint" style="margin:0 0 8px">Versions and edits are saved <b>inside the .aep</b> — no extra files. Only temporary audio and models live on disk.</p>
+        <div class="lbl" style="text-transform:none;letter-spacing:0;font-weight:500">Temporary audio</div>
+        <div class="seg"><button id="cacheApp">App folder</button><button id="cacheProj">Next to the project</button></div>
+        <table class="tbl" style="margin-top:6px">
+          <tr><td>Temporary files</td><td><span id="szCache">—</span> <button class="ib" id="openCache">Open</button></td></tr>
+          <tr><td>Models</td><td><span id="szModels">—</span> <button class="ib" id="openModels">Open</button></td></tr>
+          <tr><td>Versions in this comp</td><td><span id="nVers">—</span></td></tr>
+        </table>
+        <div class="fxg" style="margin-top:6px">
+          <button class="fx" id="clearCache"><span class="ic">⌫</span><div>Clear temp files<small>models stay</small></div></button>
+          <button class="fx" id="pruneVers"><span class="ic">⧉</span><div>Delete old versions<small>keeps the open one</small></div></button>
+        </div>
+        <p class="hint" id="cacheHint"></p>
+      </div>
+      <div class="sec tight about"><span id="about"></span></div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="js/log.js"></script>
+<script src="js/CSInterface.js"></script>
+<script src="js/lines.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
